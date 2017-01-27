@@ -23,6 +23,7 @@ android {
 repositories {
     flatDir {
         dirs '../libs'
+        dirs 'libs', 'C:\\Users\\Cormac\\navx-micro\\android\\libs'
     }
 }
 
