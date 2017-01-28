@@ -67,7 +67,7 @@ public class AutoSmashBlueOld extends AutoFunctions {
 
         findWhite();
 
-        stayWhiteBlue();
+        stayWhiteBlueOld();
         runForTime(.2, .2, 500);
         sleep(500);
 

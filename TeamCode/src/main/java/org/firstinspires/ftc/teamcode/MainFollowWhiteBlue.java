@@ -116,13 +116,13 @@ public class MainFollowWhiteBlue extends AutoFunctions {
         // find white line with findWhite loop
         findWhite();
         // stay on white line until touch sensor is pressed
-        stayWhiteBlue();
+        stayWhiteBlueOld();
         // back up supposedly straight
         runForTime(.1, .1, 3/2);
         // re find white line
         scanWhite();
         // drive back to beacon
-        stayWhiteBlue();
+        stayWhiteBlueOld();
 
         leftMotor.setPower(0);
         rightMotor.setPower(0);
