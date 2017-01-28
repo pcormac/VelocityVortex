@@ -94,7 +94,7 @@ public class AutoFunctions extends LinearOpMode {
     private final double YAW_PID_I = 0.0;
     private final double YAW_PID_D = 0.0;
 
-    private boolean calibration_complete = false;
+    public boolean calibration_complete = false;
     boolean navxConnected = true;
 
     navXPIDController.PIDResult yawPIDResult;
