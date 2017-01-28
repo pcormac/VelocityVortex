@@ -235,8 +235,7 @@ public class TeleOp7646 extends OpMode {
         telemetry.addData("Left: ", gamepad1.left_stick_y);
         telemetry.addData("Elevator: ", elevator.getPower());
         telemetry.addData("Front Hand: ", handFront.getPosition());
-        telemetry.addData("Front Hand Boolean: ", hand);
-        telemetry.addData("Fly: ", fly);
+        telemetry.addData("Front Hand Button: ", gamepad1.x);
         telemetry.addData("Fly Power: ", rightFly.getPower());
         telemetry.addData("Elevator Touch: ", elevatorTouch.getValue());
         telemetry.update();
