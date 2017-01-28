@@ -42,7 +42,6 @@ public class AutoJustThrowLong extends AutoFunctions {
         telemetry.update();
 
         handFront.setPosition(.5);
-        handBack.setPosition(1);
 
         waitForStart();
 
@@ -66,8 +65,8 @@ public class AutoJustThrowLong extends AutoFunctions {
         telemetry.update();
         autoFire2();
         elevatorDown();
-        leftMotor.setPower(-1);
-        rightMotor.setPower(-1);
+        leftMotor.setPower(-.5);
+        rightMotor.setPower(-.5);
         sleep(1000);
 
         telemetry.addData("AutoStatus: ", "Autonomous done");

@@ -38,6 +38,7 @@ import android.view.View;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -67,14 +68,13 @@ public class AutoFunctions extends LinearOpMode {
     DcMotor rightFly = null;
     DcMotor elevator = null;
     Servo handFront = null;
-    Servo handBack = null;
 
     TouchSensor touchSensor = null;
     TouchSensor elevatorTouch = null;
     OpticalDistanceSensor odsSensor;
     OpticalDistanceSensor sharpIR = null;
     ColorSensor colorSensor = null;
-    UltrasonicSensor ultra = null;
+    ModernRoboticsI2cRangeSensor ultra = null;
 
     /* This is the port on the Core Device Interface Module        */
     /* in which the navX-Model Device is connected.  Modify this  */
@@ -115,7 +115,6 @@ public class AutoFunctions extends LinearOpMode {
         rightFly = hardwareMap.dcMotor.get("rightFly");
         elevator = hardwareMap.dcMotor.get("elevator");
         handFront = hardwareMap.servo.get("handFront");
-        handBack = hardwareMap.servo.get("handBack");
 
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -124,7 +123,7 @@ public class AutoFunctions extends LinearOpMode {
         leftFly.setDirection(DcMotor.Direction.REVERSE);
 
         odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
-        ultra = hardwareMap.ultrasonicSensor.get("ultra");
+        ultra = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "ultra");
         touchSensor = hardwareMap.touchSensor.get("touchSensor");
         elevatorTouch = hardwareMap.touchSensor.get("elevatorTouch");
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
@@ -166,18 +165,13 @@ public class AutoFunctions extends LinearOpMode {
         });
     }
     public void autoFire() throws InterruptedException {
-        // drive to center to fire
-        leftMotor.setPower(-1);
-        rightMotor.setPower(-1);
-        telemetry.addData("AutoStatus: ", "Moving to center");
-        telemetry.update();
         leftFly.setPower(.5);
         rightFly.setPower(.5);
         sleep(500);
 
         leftFly.setPower(.95);
         rightFly.setPower(.95);
-        elevator.setPower(1);
+        elevator.setPower(.33);
         sleep(500);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
@@ -193,8 +187,8 @@ public class AutoFunctions extends LinearOpMode {
     }
     public void autoFireLong() throws InterruptedException {
         // drive to center to fire
-        leftMotor.setPower(-1);
-        rightMotor.setPower(-1);
+        leftMotor.setPower(-.35);
+        rightMotor.setPower(-.35);
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
         leftFly.setPower(.5);
@@ -203,7 +197,7 @@ public class AutoFunctions extends LinearOpMode {
 
         leftFly.setPower(.95);
         rightFly.setPower(.95);
-        elevator.setPower(1);
+        elevator.setPower(.33);
         sleep(1000);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
@@ -220,7 +214,7 @@ public class AutoFunctions extends LinearOpMode {
     public void autoFire2() throws InterruptedException {
         leftFly.setPower(.95);
         rightFly.setPower(.95);
-        elevator.setPower(1);
+        elevator.setPower(.33);
         telemetry.addData("Fire status: ", "Firing #2");
         telemetry.update();
         sleep(3000);
@@ -265,8 +259,8 @@ public class AutoFunctions extends LinearOpMode {
     public void findWhite() throws InterruptedException {
         runtime.reset();
         while (opModeIsActive() && (odsSensor.getLightDetected() < (odsStart * 3))) {
-            leftMotor.setPower(-.5 + (runtime.time() / 100));
-            rightMotor.setPower(-.5);
+            leftMotor.setPower(-.25 + (runtime.time() / 200));
+            rightMotor.setPower(-.25);
             telemetry.addData("Follow Status", "Finding white line");
             telemetry.addData("Light:", odsSensor.getLightDetected());
             telemetry.addData("White line", odsStart * 3);
@@ -373,7 +367,7 @@ public class AutoFunctions extends LinearOpMode {
         odsMax = odsSensor.getLightDetected();
         odsTurn = false;
         sleep(50);
-        while (opModeIsActive() && !touchSensor.isPressed() && (runtime.time() < 5)) {
+        while (opModeIsActive() && (ultra.cmUltrasonic() < 13) && (runtime.time() < 5)) {
             if (odsSensor.getLightDetected() >= .9 * odsMax) {
                 odsMax = odsSensor.getLightDetected();
             } else if (odsSensor.getLightDetected() < .9 * odsMax) {
@@ -399,7 +393,7 @@ public class AutoFunctions extends LinearOpMode {
         odsMax = odsSensor.getLightDetected();
         odsTurn = true;
         sleep(50);
-        while (opModeIsActive() && !touchSensor.isPressed() && (runtime.time() < 5)) {
+        while (opModeIsActive() && (ultra.cmUltrasonic() < 13) && (runtime.time() < 5)) {
             if (odsSensor.getLightDetected() >= .9 * odsMax) {
                 odsMax = odsSensor.getLightDetected();
             } else if (odsSensor.getLightDetected() < .9 * odsMax) {
@@ -407,12 +401,12 @@ public class AutoFunctions extends LinearOpMode {
             }
 
             if (odsTurn) {
-                leftMotor.setPower(-.10);
-                rightMotor.setPower(.10);
+                leftMotor.setPower(-.05);
+                rightMotor.setPower(.05);
             }
             else {
-                leftMotor.setPower(.10);
-                rightMotor.setPower(.10);
+                leftMotor.setPower(.05);
+                rightMotor.setPower(.05);
             }
         }
     }
@@ -442,7 +436,7 @@ public class AutoFunctions extends LinearOpMode {
         }
     }
     public void driveStraightTimed(double drive_speed, double driveTime) throws InterruptedException {
-        while (opModeIsActive() && (runtime.time() < driveTime)) {
+        while (opModeIsActive() && (runtime.time() < (driveTime/1000))) {
             if (yawPIDController.waitForNewUpdate(yawPIDResult, 500)) {
                 if (yawPIDResult.isOnTarget()) {
                     leftMotor.setPower(drive_speed);
@@ -475,14 +469,13 @@ public class AutoFunctions extends LinearOpMode {
         DcMotor leftFly = null;
         DcMotor rightFly = null;
         Servo handFront = null;
-        Servo handBack = null;
 
         TouchSensor touchSensor = null;
         TouchSensor elevatorTouch = null;
         OpticalDistanceSensor odsSensor;
         ColorSensor colorSensor = null;
         OpticalDistanceSensor sharpIR = null;
-        UltrasonicSensor ultra = null;
+        ModernRoboticsI2cRangeSensor ultra = null;
 
 
         // This is the port on the Core Device Interface Module
@@ -528,7 +521,6 @@ public class AutoFunctions extends LinearOpMode {
 
         // Servos
         handFront = hardwareMap.servo.get("handFront");
-        handBack = hardwareMap.servo.get("handBack");
 
         {
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
@@ -553,7 +545,7 @@ public class AutoFunctions extends LinearOpMode {
         //     Light sensor
         odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
         //     Ultrasonic Sensor
-        ultra = hardwareMap.ultrasonicSensor.get("ultra");
+        ultra = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "ultra");
         //     Touch sensor
         touchSensor = hardwareMap.touchSensor.get("touchSensor");
         //     Elevator touch

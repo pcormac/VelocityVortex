@@ -37,6 +37,7 @@ import android.graphics.Color;
 import android.view.View;
 
 import com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -50,6 +51,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.ConceptTelemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name="SensorTest", group="Iterative Opmode")
 public class SensorTest extends OpMode {
@@ -69,7 +71,7 @@ public class SensorTest extends OpMode {
     TouchSensor elevatorTouch = null;
     OpticalDistanceSensor odsSensor;
     ColorSensor colorSensor = null;
-    UltrasonicSensor ultra = null;
+    ModernRoboticsI2cRangeSensor ultra = null;
     OpticalDistanceSensor sharpIR = null;
 
     String color;
@@ -103,7 +105,7 @@ public class SensorTest extends OpMode {
         touchSensor = hardwareMap.touchSensor.get("touchSensor");
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
         elevatorTouch = hardwareMap.touchSensor.get("elevatorTouch");
-        ultra = hardwareMap.ultrasonicSensor.get("ultra");
+        ultra = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "ultra");
         sharpIR = hardwareMap.opticalDistanceSensor.get("infrared");
 
         odsStart = odsSensor.getLightDetected();
@@ -143,7 +145,8 @@ public class SensorTest extends OpMode {
         }
 
         // end of code, update telemetry
-        telemetry.addData("UltraSonic: ", ultra.getUltrasonicLevel());
+        telemetry.addData("UltraSonic Raw: ", ultra.rawUltrasonic());
+        telemetry.addData("cm", "%.2f cm", ultra.getDistance(DistanceUnit.CM));
         telemetry.addData("SharpIR: ", sharpIR.getLightDetected());
         telemetry.addData("Color Red: ", color);
         telemetry.addData("Elevator Touch: ", elevatorTouch.getValue());

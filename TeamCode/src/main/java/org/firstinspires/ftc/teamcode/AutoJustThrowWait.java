@@ -42,7 +42,6 @@ public class AutoJustThrowWait extends AutoFunctions {
         telemetry.update();
 
         handFront.setPosition(.5);
-        handBack.setPosition(1);
 
         waitForStart();
 
@@ -58,8 +57,6 @@ public class AutoJustThrowWait extends AutoFunctions {
         // load second ball
         telemetry.addData("AutoStatus: ", "Loading second ball");
         telemetry.update();
-        handFront.setPosition(.5);
-        sleep(500);
         handFront.setPosition(1);
         sleep(250);
 

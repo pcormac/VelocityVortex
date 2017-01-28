@@ -61,25 +61,25 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
         telemetry.addData("AutoStatus: ", "Firing second ball");
         telemetry.update();
         autoFire2();
-        elevatorDownDrive(.8, .4, -.4);
+        elevatorDownDrive(.8, .2, -.2);
 
         findWhiteStraight();
 
-        driveStraightTimed(-.25, .5);
+        driveStraightTimed(-.125, .5);
 
         turnToWhite(0, -.25);
 
         stayWhiteBlueAdvanced();
-        runForTime(.2, .2, 500);
+        runForTime(.1, .1, 500);
         sleep(500);
 
         runtime.reset();
         while (opModeIsActive() && runtime.time() < 2) {
             if (colorSensor.red() > colorSensor.blue() && !(colorSensor.red() < colorSensor.alpha())) {
-                runForTime(-.2, -.2, 1000);
+                runForTime(-.1, -.1, 1000);
             }
             else if (colorSensor.alpha() > colorSensor.red()) {
-                runForTime(-.2, -.2, 500);
+                runForTime(-.1, -.1, 500);
             }
             else {
                 leftMotor.setPower(0);

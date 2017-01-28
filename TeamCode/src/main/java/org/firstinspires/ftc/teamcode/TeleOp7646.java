@@ -58,7 +58,7 @@ public class TeleOp7646 extends OpMode {
     private DcMotor leftFly = null;
     private DcMotor rightFly = null;
     private Servo handFront = null;
-    private Servo handBack = null;
+    private Servo handCap = null;
 
     TouchSensor touchSensor = null;
     TouchSensor elevatorTouch = null;
@@ -86,7 +86,7 @@ public class TeleOp7646 extends OpMode {
         rightFly = hardwareMap.dcMotor.get("rightFly");
 
         handFront = hardwareMap.servo.get("handFront");
-        handBack = hardwareMap.servo.get("handBack");
+        handCap = hardwareMap.servo.get("handCap");
 
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
@@ -108,6 +108,7 @@ public class TeleOp7646 extends OpMode {
 
     @Override
     public void init_loop() {
+        handCap.setPosition(0);
     }
 
     /*
@@ -131,21 +132,21 @@ public class TeleOp7646 extends OpMode {
         Left Stick    = Left drive
         Right Stick   = Right Drive
         A             = Power Flywheels
-        B             =
+        B             = fly
         Y             =
-        X             =
+        X             = Rotate front hand
         Left Bumper   = .25 speed
-        Right Bumper  = fly
+        Right Bumper  =
 
         Game pad 2
         Left Stick    = Elevator
         Right Stick   =
-        A             = Rotate front hand
-        B             = Rotate back hand
+        A             =
+        B             =
         Y             =
-        X             =
-        Left Bumper   = Red Beacon
-        Right Bumper  = Blue beacon
+        X             = Let handCap go
+        Left Bumper   =
+        Right Bumper  =
         */
         // Tank drive
         if (gamepad1.left_stick_y < .25 && gamepad1.left_stick_y > 0) {
@@ -201,33 +202,33 @@ public class TeleOp7646 extends OpMode {
         }
         // THROWING BALLS
         if (gamepad1.a) {
-            runtime.reset();
-        } else {
-            flyTime = .5 * runtime.seconds();
-            if ((runtime.seconds() < 4) & (fly)) {
-                leftFly.setPower(Range.clip(flyTime, 0, .95));
-                rightFly.setPower(Range.clip(flyTime, 0, .95));
+            if (gamepad1.a  && gamepad1.b) {
+                leftFly.setPower(95);
+                rightFly.setPower(.95);
             } else {
-                leftFly.setPower(0);
-                rightFly.setPower(0);
-                fly = false;
+                leftFly.setPower(.5);
+                rightFly.setPower(.5);
             }
+        } else {
+            leftFly.setPower(0);
+            rightFly.setPower(0);
         }
 
+
         // switching hand boolean SWITCH TO JOY2STICK2
-        if (gamepad2.a) {
+        if (gamepad1.x) {
             handFront.setPosition(0);
         }
         else {
             handFront.setPosition(1);
         }
 
-        if (gamepad2.b) {
-            handBack.setPosition(.5);
+        if (gamepad2.x) {
+            handCap.setPosition(.5);
+        } else {
+            handCap.setPosition(0);
         }
-        else {
-            handBack.setPosition(1);
-        }
+
 
         // end of code, update telemetry
         telemetry.addData("Right: ", gamepad1.right_stick_y);
@@ -235,7 +236,6 @@ public class TeleOp7646 extends OpMode {
         telemetry.addData("Elevator: ", elevator.getPower());
         telemetry.addData("Front Hand: ", handFront.getPosition());
         telemetry.addData("Front Hand Boolean: ", hand);
-        telemetry.addData("Back Hand: ", handBack.getPosition());
         telemetry.addData("Fly: ", fly);
         telemetry.addData("Fly Power: ", rightFly.getPower());
         telemetry.addData("Elevator Touch: ", elevatorTouch.getValue());

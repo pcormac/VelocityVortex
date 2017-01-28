@@ -47,6 +47,11 @@ public class AutoJustThrow extends AutoFunctions {
 
         runtime.reset();
 
+        // drive to center
+        driveStraightTimed(-.3, 500);
+        telemetry.addData("AutoStatus: ", "Moving to center");
+        telemetry.update();
+
         // fire first ball
         telemetry.addData("AutoStatus: ", "Firing first ball");
         telemetry.update();
