@@ -48,6 +48,7 @@ import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.InstantRunDexHelper;
 
@@ -71,8 +72,9 @@ public class AutoFunctions extends LinearOpMode {
     TouchSensor touchSensor = null;
     TouchSensor elevatorTouch = null;
     OpticalDistanceSensor odsSensor;
+    OpticalDistanceSensor sharpIR = null;
     ColorSensor colorSensor = null;
-    IrSeekerSensor infrared = null;
+    UltrasonicSensor ultra = null;
 
     /* This is the port on the Core Device Interface Module        */
     /* in which the navX-Model Device is connected.  Modify this  */
@@ -120,11 +122,12 @@ public class AutoFunctions extends LinearOpMode {
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         leftFly.setDirection(DcMotor.Direction.REVERSE);
+
         odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
+        ultra = hardwareMap.ultrasonicSensor.get("ultra");
         touchSensor = hardwareMap.touchSensor.get("touchSensor");
         elevatorTouch = hardwareMap.touchSensor.get("elevatorTouch");
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
-        infrared = hardwareMap.irSeekerSensor.get("infrared");
 
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 NAVX_DIM_I2C_PORT,
@@ -478,7 +481,8 @@ public class AutoFunctions extends LinearOpMode {
         TouchSensor elevatorTouch = null;
         OpticalDistanceSensor odsSensor;
         ColorSensor colorSensor = null;
-        IrSeekerSensor infrared = null;
+        OpticalDistanceSensor sharpIR = null;
+        UltrasonicSensor ultra = null;
 
 
         // This is the port on the Core Device Interface Module
@@ -548,6 +552,8 @@ public class AutoFunctions extends LinearOpMode {
         // Sensors
         //     Light sensor
         odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
+        //     Ultrasonic Sensor
+        ultra = hardwareMap.ultrasonicSensor.get("ultra");
         //     Touch sensor
         touchSensor = hardwareMap.touchSensor.get("touchSensor");
         //     Elevator touch
@@ -555,7 +561,9 @@ public class AutoFunctions extends LinearOpMode {
         //     Color sensor
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
         //     Ir Sensor
-        infrared = hardwareMap.irSeekerSensor.get("infrared");
+        sharpIR = hardwareMap.opticalDistanceSensor.get("infrared");
+
+
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE);
         rightMotor.setDirection(DcMotor.Direction.FORWARD);
