@@ -68,6 +68,7 @@ public class AutoFunctions extends LinearOpMode {
     DcMotor rightFly = null;
     DcMotor elevator = null;
     Servo handFront = null;
+    Servo handCap = null;
 
     TouchSensor touchSensor = null;
     TouchSensor elevatorTouch = null;
@@ -79,14 +80,14 @@ public class AutoFunctions extends LinearOpMode {
     /* This is the port on the Core Device Interface Module        */
     /* in which the navX-Model Device is connected.  Modify this  */
     /* depending upon which I2C port you are using.               */
-    private final int NAVX_DIM_I2C_PORT = 1;
+    private final int NAVX_DIM_I2C_PORT = 0;
     private AHRS navx_device;
     private navXPIDController yawPIDController;
     private ElapsedTime runtime = new ElapsedTime();
 
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
-    private final double TARGET_ANGLE_DEGREES = 0.0;
+    private double TARGET_ANGLE_DEGREES = 0.0;
     private final double TOLERANCE_DEGREES = 1.0;
     private final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
     private final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
@@ -115,6 +116,7 @@ public class AutoFunctions extends LinearOpMode {
         rightFly = hardwareMap.dcMotor.get("rightFly");
         elevator = hardwareMap.dcMotor.get("elevator");
         handFront = hardwareMap.servo.get("handFront");
+        handCap = hardwareMap.servo.get("handCap");
 
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -171,13 +173,13 @@ public class AutoFunctions extends LinearOpMode {
 
         leftFly.setPower(.95);
         rightFly.setPower(.95);
-        elevator.setPower(.33);
+        elevator.setPower(1);
         sleep(500);
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         telemetry.addData("Fire status: ", "Firing");
         telemetry.update();
-        sleep(2500);
+        sleep(750);
 
         elevator.setPower(0);
         telemetry.addData("Fire status: ", "Powered down");
@@ -214,10 +216,10 @@ public class AutoFunctions extends LinearOpMode {
     public void autoFire2() throws InterruptedException {
         leftFly.setPower(.95);
         rightFly.setPower(.95);
-        elevator.setPower(.33);
+        elevator.setPower(1);
         telemetry.addData("Fire status: ", "Firing #2");
         telemetry.update();
-        sleep(3000);
+        sleep(1250);
 
         elevator.setPower(0);
         telemetry.addData("Fire status: ", "Powered down");
@@ -437,6 +439,7 @@ public class AutoFunctions extends LinearOpMode {
     }
     public void driveStraightTimed(double drive_speed, double driveTime) throws InterruptedException {
         while (opModeIsActive() && (runtime.time() < (driveTime/1000))) {
+            TARGET_ANGLE_DEGREES = navx_device.getYaw();
             if (yawPIDController.waitForNewUpdate(yawPIDResult, 500)) {
                 if (yawPIDResult.isOnTarget()) {
                     leftMotor.setPower(drive_speed);
@@ -469,6 +472,7 @@ public class AutoFunctions extends LinearOpMode {
         DcMotor leftFly = null;
         DcMotor rightFly = null;
         Servo handFront = null;
+        Servo handCap = null;
 
         TouchSensor touchSensor = null;
         TouchSensor elevatorTouch = null;
@@ -481,14 +485,14 @@ public class AutoFunctions extends LinearOpMode {
         // This is the port on the Core Device Interface Module
         // in which the navX-Model Device is connected.  Modify this
         // depending upon which I2C port you are using.
-        final int NAVX_DIM_I2C_PORT = 1;
+        final int NAVX_DIM_I2C_PORT = 0;
         AHRS navx_device;
         navXPIDController yawPIDController;
         ElapsedTime runtime = new ElapsedTime();
 
         final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
 
-        final double TARGET_ANGLE_DEGREES = 0.0;
+        double TARGET_ANGLE_DEGREES = 0.0;
         final double TOLERANCE_DEGREES = 1.0;
         final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
         final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
@@ -521,6 +525,7 @@ public class AutoFunctions extends LinearOpMode {
 
         // Servos
         handFront = hardwareMap.servo.get("handFront");
+        handCap = hardwareMap.servo.get("handCap");
 
         {
         navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
@@ -563,5 +568,7 @@ public class AutoFunctions extends LinearOpMode {
         leftFly.setDirection(DcMotor.Direction.REVERSE);
 
         odsStart = odsSensor.getLightDetected();
+
+        handCap.setPosition(1);
     }
 }

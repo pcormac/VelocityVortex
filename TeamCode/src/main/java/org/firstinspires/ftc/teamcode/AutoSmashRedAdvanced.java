@@ -26,6 +26,8 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         super.declareDevices();
     }
 
+    public AHRS navx_device;
+
     static double odsStart;
 
     public void runOpMode() throws InterruptedException {
@@ -39,11 +41,19 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         telemetry.addData(">", "Robot Ready.");
         telemetry.addData("White line", odsStart * 3);
-        telemetry.addData("Touch", touchSensor.getValue());
         telemetry.update();
 
         waitForStart();
+
         runtime.reset();
+
+        navx_device.zeroYaw();
+
+        if (!navx_device.isCalibrating()) {
+            driveStraightTimed(-.3, 1);
+        } else {
+            runForTime(-.3, -.3, 500);
+        }
 
         // fire first ball
         telemetry.addData("AutoStatus: ", "Firing first ball");
@@ -63,9 +73,17 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         autoFire2();
         elevatorDownDrive(.8, -.2, .2);
 
-        findWhiteStraight();
+        if (!navx_device.isCalibrating()) {
+            findWhiteStraight();
+        } else {
+            findWhite();
+        }
 
-        driveStraightTimed(-.125, .5);
+        if (!navx_device.isCalibrating()) {
+            driveStraightTimed(-.125, .3);
+        } else {
+            runForTime(-.125, -.125, 300);
+        }
 
         turnToWhite(0, -.125);
 

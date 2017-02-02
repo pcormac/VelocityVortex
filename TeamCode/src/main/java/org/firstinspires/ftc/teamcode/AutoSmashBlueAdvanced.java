@@ -41,11 +41,13 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
 
         telemetry.addData(">", "Robot Ready.");
         telemetry.addData("White line", odsStart * 3);
-        telemetry.addData("Touch", touchSensor.getValue());
         telemetry.update();
 
         waitForStart();
+
         runtime.reset();
+
+        runForTime(-.3, -.3, 500);
 
         // fire first ball
         telemetry.addData("AutoStatus: ", "Firing first ball");
@@ -65,9 +67,9 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
         autoFire2();
         elevatorDownDrive(.8, .2, -.2);
 
-        findWhiteStraight();
+        findWhite();
 
-        driveStraightTimed(-.125, .5);
+        runForTime(-.125, -.125, 300);
 
         turnToWhite(0, -.25);
 
@@ -87,7 +89,6 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
                 leftMotor.setPower(0);
                 rightMotor.setPower(0);
             }
-
         }
 
 
