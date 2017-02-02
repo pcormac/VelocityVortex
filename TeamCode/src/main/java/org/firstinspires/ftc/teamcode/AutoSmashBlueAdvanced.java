@@ -26,6 +26,8 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
         super.declareDevices();
     }
 
+    private AHRS navx_device;
+
     static double odsStart;
 
     public void runOpMode() throws InterruptedException {

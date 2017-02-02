@@ -48,7 +48,7 @@ public class AutoJustThrow extends AutoFunctions {
         runtime.reset();
 
         // drive to center
-        driveStraightTimed(-.3, 500);
+        runForTime(-.3, -.3, 500);
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 

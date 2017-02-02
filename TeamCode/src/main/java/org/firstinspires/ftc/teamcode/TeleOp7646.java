@@ -64,10 +64,11 @@ public class TeleOp7646 extends OpMode {
     TouchSensor elevatorTouch = null;
     OpticalDistanceSensor odsSensor;
     ColorSensor colorSensor = null;
+    OpticalDistanceSensor sharpIR = null;
 
     boolean fly = false;
     boolean hand = true;
-    double flyTime = 0;
+    double servoTimedPosition = 0;
     double elevatorPower = 0;
     static double odsStart;
 
@@ -95,9 +96,9 @@ public class TeleOp7646 extends OpMode {
         leftFly.setDirection(DcMotor.Direction.REVERSE);
 
         odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
-        touchSensor = hardwareMap.touchSensor.get("touchSensor");
         colorSensor = hardwareMap.colorSensor.get("colorSensor");
         elevatorTouch = hardwareMap.touchSensor.get("elevatorTouch");
+        sharpIR = hardwareMap.opticalDistanceSensor.get("infrared");
 
         odsStart = odsSensor.getLightDetected();
 
@@ -108,7 +109,7 @@ public class TeleOp7646 extends OpMode {
 
     @Override
     public void init_loop() {
-        handCap.setPosition(0);
+        handCap.setPosition(1);
     }
 
     /*
@@ -131,8 +132,8 @@ public class TeleOp7646 extends OpMode {
         Game pad 1
         Left Stick    = Left drive
         Right Stick   = Right Drive
-        A             = Power Flywheels
-        B             = fly
+        A             = Grab Ball
+        B             =
         Y             =
         X             = Rotate front hand
         Left Bumper   = .25 speed
@@ -141,13 +142,15 @@ public class TeleOp7646 extends OpMode {
         Game pad 2
         Left Stick    = Elevator
         Right Stick   =
-        A             =
-        B             =
+        A             = 50% fly
+        B             = 100% fly
         Y             =
         X             = Let handCap go
         Left Bumper   =
         Right Bumper  =
         */
+
+
         // Tank drive
         if (gamepad1.left_stick_y < .25 && gamepad1.left_stick_y > 0) {
             leftMotor.setPower(0);
@@ -187,6 +190,33 @@ public class TeleOp7646 extends OpMode {
             }
         }
 
+        // switching hand boolean
+        if (gamepad1.a) {
+            handFront.setPosition(1);
+        } else if (gamepad1.b) {
+            handFront.setPosition(.2);
+        } else {
+            if (sharpIR.getRawLightDetected() >  2.4 && handFront.getPosition() == .2) {
+                runtime.reset();
+                servoTimedPosition = (runtime.time()/100);
+                handFront.setPosition(Range.clip(.2, .9, servoTimedPosition));
+            } else if (sharpIR.getRawLightDetected() < 2.4 && handFront.getPosition() == .9){
+                runtime.reset();
+                servoTimedPosition = -1*(runtime.time()/100);
+                handFront.setPosition(Range.clip(.2, .9, servoTimedPosition));
+            }
+        }
+
+        if (handFront.getPosition() == 1) {
+            hand = true;
+        } else if (handFront.getPosition() == .2) {
+            hand = false;
+        }
+        //
+        //
+        //        JOY 2
+        //
+        //
         if (elevatorTouch.isPressed()) {
             elevator.setPower(Range.clip(gamepad2.left_stick_y, 0, 1));
         }
@@ -196,13 +226,9 @@ public class TeleOp7646 extends OpMode {
             elevator.setPower(elevatorPower);
         }
 
-        // Set fly = true
-        if (gamepad1.right_bumper) {
-            fly = true;
-        }
         // THROWING BALLS
-        if (gamepad1.a) {
-            if (gamepad1.a  && gamepad1.b) {
+        if (gamepad2.a) {
+            if (gamepad2.a  && gamepad2.b) {
                 leftFly.setPower(95);
                 rightFly.setPower(.95);
             } else {
@@ -214,54 +240,23 @@ public class TeleOp7646 extends OpMode {
             rightFly.setPower(0);
         }
 
-
-        // switching hand boolean SWITCH TO JOY2STICK2
-        if (gamepad1.x) {
-            handFront.setPosition(0);
-        }
-        else {
-            handFront.setPosition(1);
-        }
-
         if (gamepad2.x) {
             handCap.setPosition(.5);
         } else {
-            handCap.setPosition(0);
+            handCap.setPosition(1);
         }
 
 
         // end of code, update telemetry
         telemetry.addData("Right: ", gamepad1.right_stick_y);
         telemetry.addData("Left: ", gamepad1.left_stick_y);
+        telemetry.addData("SharpIR: ", sharpIR.getRawLightDetected());
+        telemetry.addData("Hand: ", hand);
         telemetry.addData("Elevator: ", elevator.getPower());
         telemetry.addData("Front Hand: ", handFront.getPosition());
-        telemetry.addData("Front Hand Button: ", gamepad1.x);
         telemetry.addData("Fly Power: ", rightFly.getPower());
         telemetry.addData("Elevator Touch: ", elevatorTouch.getValue());
         telemetry.update();
-    }
-
-    public void stayWhite() throws InterruptedException {
-        if (!touchSensor.isPressed()) {
-            // follow white line
-            if (odsSensor.getLightDetected() > (1.5 * odsStart)) {
-                leftMotor.setPower(.15);
-                rightMotor.setPower(.15);
-                telemetry.addData("Follow Status", "Driving");
-                telemetry.addData("Light", odsSensor.getLightDetected());
-                telemetry.addData("Touch:", touchSensor.getValue());
-                //updateColor();
-                telemetry.update();
-            } else {
-                leftMotor.setPower(.1);
-                rightMotor.setPower(-.1);
-                telemetry.addData("Follow Status", "Turning");
-                telemetry.addData("Light", odsSensor.getLightDetected());
-                telemetry.addData("Touch:", touchSensor.getValue());
-                //updateColor();
-                telemetry.update();
-            }
-        }
     }
 
     @Override

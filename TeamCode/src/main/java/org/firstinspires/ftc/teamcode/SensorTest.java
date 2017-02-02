@@ -65,7 +65,6 @@ public class SensorTest extends OpMode {
     private DcMotor leftFly = null;
     private DcMotor rightFly = null;
     private Servo handFront = null;
-    private Servo handBack = null;
 
     TouchSensor touchSensor = null;
     TouchSensor elevatorTouch = null;
@@ -93,7 +92,6 @@ public class SensorTest extends OpMode {
         rightFly = hardwareMap.dcMotor.get("rightFly");
 
         handFront = hardwareMap.servo.get("handFront");
-        handBack = hardwareMap.servo.get("handBack");
 
         // Reverse the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
