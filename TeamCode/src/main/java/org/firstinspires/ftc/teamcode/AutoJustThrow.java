@@ -48,7 +48,7 @@ public class AutoJustThrow extends AutoFunctions {
         runtime.reset();
 
         // drive to center
-        runForTime(-.3, -.3, 500);
+        runForTime(-.26, -.3, 1200);
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 
@@ -62,13 +62,21 @@ public class AutoJustThrow extends AutoFunctions {
         telemetry.addData("AutoStatus: ", "Loading second ball");
         telemetry.update();
         handFront.setPosition(1);
-        sleep(500);
+        sleep(750);
 
         // fire second ball
         telemetry.addData("AutoStatus: ", "Firing second ball");
         telemetry.update();
         autoFire2();
         elevatorDown();
+
+        leftMotor.setPower(-.5);
+        rightMotor.setPower(-.5);
+        sleep(700);
+
+        leftMotor.setPower(-.5);
+        rightMotor.setPower(.5);
+        sleep(500);
 
         leftMotor.setPower(0);
         rightMotor.setPower(0);

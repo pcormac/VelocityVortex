@@ -133,9 +133,9 @@ public class TeleOp7646 extends OpMode {
         Left Stick    = Left drive
         Right Stick   = Right Drive
         A             = Grab Ball
-        B             =
+        B             = Release Hand
         Y             =
-        X             = Rotate front hand
+        X             =
         Left Bumper   = .25 speed
         Right Bumper  =
 
@@ -190,7 +190,7 @@ public class TeleOp7646 extends OpMode {
             }
         }
 
-        // switching hand boolean
+        // Manually grab
         if (gamepad1.a) {
             handFront.setPosition(1);
         } else if (gamepad1.b) {
