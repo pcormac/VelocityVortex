@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.View;
 
 import com.kauailabs.navx.ftc.AHRS;
+import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -17,6 +18,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.text.DecimalFormat;
+
 @Autonomous(name="Auto: Smash Red Advanced", group="Main")
 public class AutoSmashRedAdvanced extends AutoFunctions {
     private ElapsedTime runtime = new ElapsedTime();
@@ -26,7 +29,29 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         super.declareDevices();
     }
 
-    public AHRS navx_device;
+    // This is the port on the Core Device Interface Module
+    // in which the navX-Model Device is connected.  Modify this
+    // depending upon which I2C port you are using.
+    final int NAVX_DIM_I2C_PORT = 0;
+    AHRS navx_device;
+    navXPIDController yawPIDController;
+
+    final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
+
+    double TARGET_ANGLE_DEGREES = 0.0;
+    final double TOLERANCE_DEGREES = 1.0;
+    final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
+    final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
+    final double YAW_PID_P = 0.005;
+    final double YAW_PID_I = 0.0;
+    final double YAW_PID_D = 0.0;
+
+    boolean calibration_complete = false;
+    boolean navxConnected = true;
+
+    navXPIDController.PIDResult yawPIDResult;
+    DecimalFormat df;
+
 
     static double odsStart;
 
@@ -34,6 +59,23 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         declareMap();
 
+        {
+            navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
+                    NAVX_DIM_I2C_PORT,
+                    AHRS.DeviceDataType.kProcessedData,
+                    NAVX_DEVICE_UPDATE_RATE_HZ);
+            // Create a PID Controller which uses the Yaw Angle as input.
+            yawPIDController = new navXPIDController( navx_device,
+                    navXPIDController.navXTimestampedDataSource.YAW);
+
+            // Configure the PID controller
+            yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
+            yawPIDController.setContinuous(true);
+            yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
+            yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
+            yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
+            yawPIDController.enable(true);
+        }
         leftFly.setDirection(DcMotor.Direction.REVERSE);
         colorSensor.enableLed(false);
 
@@ -47,13 +89,10 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         runtime.reset();
 
-        navx_device.zeroYaw();
 
-        if (!navx_device.isCalibrating()) {
-            driveStraightTimed(-.3, 1);
-        } else {
-            runForTime(-.3, -.3, 500);
-        }
+        runForTime(-.96, -1, 650);
+        telemetry.addData("AutoStatus: ", "Moving to center");
+        telemetry.update();
 
         // fire first ball
         telemetry.addData("AutoStatus: ", "Firing first ball");
@@ -65,25 +104,24 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         telemetry.addData("AutoStatus: ", "Loading second ball");
         telemetry.update();
         handFront.setPosition(1);
-        sleep(500);
+        sleep(750);
 
         // fire second ball
         telemetry.addData("AutoStatus: ", "Firing second ball");
         telemetry.update();
         autoFire2();
-        elevatorDownDrive(.8, -.2, .2);
+        elevatorDown();
+
+        runForTime(-.45, .45, 500);
 
         if (!navx_device.isCalibrating()) {
+            navx_device.zeroYaw();
             findWhiteStraight();
         } else {
             findWhite();
         }
 
-        if (!navx_device.isCalibrating()) {
-            driveStraightTimed(-.125, .3);
-        } else {
-            runForTime(-.125, -.125, 300);
-        }
+        runForTime(-.125, -.125, 300);
 
         turnToWhite(0, -.125);
 

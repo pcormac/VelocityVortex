@@ -219,7 +219,7 @@ public class AutoFunctions extends LinearOpMode {
         elevator.setPower(1);
         telemetry.addData("Fire status: ", "Firing #2");
         telemetry.update();
-        sleep(1250);
+        sleep(1500);
 
         elevator.setPower(0);
         telemetry.addData("Fire status: ", "Powered down");
@@ -261,8 +261,8 @@ public class AutoFunctions extends LinearOpMode {
     public void findWhite() throws InterruptedException {
         runtime.reset();
         while (opModeIsActive() && (odsSensor.getLightDetected() < (odsStart * 3))) {
-            leftMotor.setPower(-.25 + (runtime.time() / 200));
-            rightMotor.setPower(-.25);
+            leftMotor.setPower(-.35);
+            rightMotor.setPower(-.45);
             telemetry.addData("Follow Status", "Finding white line");
             telemetry.addData("Light:", odsSensor.getLightDetected());
             telemetry.addData("White line", odsStart * 3);
@@ -481,32 +481,6 @@ public class AutoFunctions extends LinearOpMode {
         OpticalDistanceSensor sharpIR = null;
         ModernRoboticsI2cRangeSensor ultra = null;
 
-
-        // This is the port on the Core Device Interface Module
-        // in which the navX-Model Device is connected.  Modify this
-        // depending upon which I2C port you are using.
-        final int NAVX_DIM_I2C_PORT = 0;
-        AHRS navx_device;
-        navXPIDController yawPIDController;
-        ElapsedTime runtime = new ElapsedTime();
-
-        final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
-
-        double TARGET_ANGLE_DEGREES = 0.0;
-        final double TOLERANCE_DEGREES = 1.0;
-        final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
-        final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
-        final double YAW_PID_P = 0.005;
-        final double YAW_PID_I = 0.0;
-        final double YAW_PID_D = 0.0;
-
-        boolean calibration_complete = false;
-        boolean navxConnected = true;
-
-        navXPIDController.PIDResult yawPIDResult;
-        DecimalFormat df;
-
-
         double odsMax;
         double leftTurn;
         double rightTurn;
@@ -526,25 +500,6 @@ public class AutoFunctions extends LinearOpMode {
         // Servos
         handFront = hardwareMap.servo.get("handFront");
         handCap = hardwareMap.servo.get("handCap");
-
-        {
-        navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
-                NAVX_DIM_I2C_PORT,
-                AHRS.DeviceDataType.kProcessedData,
-                NAVX_DEVICE_UPDATE_RATE_HZ);
-        // Create a PID Controller which uses the Yaw Angle as input.
-        yawPIDController = new navXPIDController( navx_device,
-                navXPIDController.navXTimestampedDataSource.YAW);
-
-        // Configure the PID controller
-        yawPIDController.setSetpoint(TARGET_ANGLE_DEGREES);
-        yawPIDController.setContinuous(true);
-        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
-        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-        yawPIDController.enable(true);
-        }
-
 
         // Sensors
         //     Light sensor

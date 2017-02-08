@@ -196,11 +196,11 @@ public class TeleOp7646 extends OpMode {
         } else if (gamepad1.b) {
             handFront.setPosition(.2);
         } else {
-            if (sharpIR.getRawLightDetected() >  2.4 && handFront.getPosition() == .2) {
+            if (sharpIR.getRawLightDetected() >  2.6 && handFront.getPosition() == .2) {
                 runtime.reset();
                 servoTimedPosition = (runtime.time()/100);
                 handFront.setPosition(Range.clip(.2, .9, servoTimedPosition));
-            } else if (sharpIR.getRawLightDetected() < 2.4 && handFront.getPosition() == .9){
+            } else if (sharpIR.getRawLightDetected() < 2.6 && handFront.getPosition() == .9){
                 runtime.reset();
                 servoTimedPosition = -1*(runtime.time()/100);
                 handFront.setPosition(Range.clip(.2, .9, servoTimedPosition));
