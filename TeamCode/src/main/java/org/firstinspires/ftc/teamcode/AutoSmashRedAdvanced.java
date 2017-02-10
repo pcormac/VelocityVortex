@@ -10,10 +10,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -29,6 +31,7 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         super.declareDevices();
     }
 
+    VoltageSensor driveController;
     // This is the port on the Core Device Interface Module
     // in which the navX-Model Device is connected.  Modify this
     // depending upon which I2C port you are using.
@@ -59,6 +62,7 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         declareMap();
 
+        driveController = hardwareMap.voltageSensor.get("Drive");
         {
             navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                     NAVX_DIM_I2C_PORT,
@@ -81,6 +85,14 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         handFront.setPosition(.5);
 
+        while (!isStopRequested() && !isStarted() && navx_device.isCalibrating()) {
+            telemetry.addData("Navx: ", "Calibrating");
+            telemetry.addData("Calibration Time: ", time);
+            telemetry.update();
+            sleep(50);
+            idle();
+        }
+
         telemetry.addData(">", "Robot Ready.");
         telemetry.addData("White line", odsStart * 3);
         telemetry.update();
@@ -89,8 +101,7 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         runtime.reset();
 
-
-        runForTime(-.96, -1, 650);
+        runForTime(-1, -.98, 650);
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 
@@ -112,38 +123,49 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         autoFire2();
         elevatorDown();
 
-        runForTime(-.45, .45, 500);
+        if (driveController.getVoltage() < 13) {
+            runForTime(-.45, .45, 500);
+        } else if (driveController.getVoltage() > 13) {
+            runForTime(-.45, .45, 375);
+        }
 
+        /*
         if (!navx_device.isCalibrating()) {
             navx_device.zeroYaw();
             findWhiteStraight();
         } else {
             findWhite();
         }
+        */
+        findWhite();
 
-        runForTime(-.125, -.125, 300);
+        runForTime(-.25, -.25, 100);
 
-        turnToWhite(0, -.125);
+        turnToWhite(-.25, .25);
 
         stayWhiteRedAdvanced();
-        runForTime(.1, .1, 500);
+        //runForTime(-.2, -.17, 4000);
+
+        runForTime(-.25, -.25, 500);
+
         sleep(500);
 
-        runtime.reset();
-        while (opModeIsActive() && runtime.time() < 2) {
-            if (colorSensor.red() < colorSensor.blue() && !(colorSensor.red() < colorSensor.alpha())) {
-                runForTime(-.1, -.1, 1000);
-            }
-            else if (colorSensor.alpha() > colorSensor.red()) {
-                runForTime(-.1, -.1, 500);
-            }
-            else {
-                leftMotor.setPower(0);
-                rightMotor.setPower(0);
-            }
+        runForTime(.25, .25, 250);
 
+        if (colorSensor.red() < colorSensor.blue() && !(colorSensor.red() < colorSensor.alpha())) {
+            sleep(5000);
+            runForTime(-.25, -.25, 1000);
+        }
+        else if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.alpha()){
+            leftMotor.setPower(0);
+            rightMotor.setPower(0);
         }
 
+
+
+        handFront.setPosition(1);
+        runForTime(.4, .4, 2000);
+        runForTime(.8, -.8, 500);
 
     }
 }

@@ -107,6 +107,8 @@ public class AutoFunctions extends LinearOpMode {
     double leftTurn;
     double rightTurn;
     boolean odsTurn;
+    boolean odsTurning;
+    String color;
 
     public void runOpMode() throws InterruptedException {
         // get motors
@@ -222,6 +224,8 @@ public class AutoFunctions extends LinearOpMode {
         sleep(1500);
 
         elevator.setPower(0);
+        leftFly.setPower(0);
+        rightFly.setPower(0);
         telemetry.addData("Fire status: ", "Powered down");
         telemetry.update();
         sleep(10);
@@ -365,50 +369,80 @@ public class AutoFunctions extends LinearOpMode {
         }
     }
     public void stayWhiteBlueAdvanced() throws InterruptedException {
-        runtime.reset();
         odsMax = odsSensor.getLightDetected();
         odsTurn = false;
         sleep(50);
-        while (opModeIsActive() && (ultra.cmUltrasonic() < 13) && (runtime.time() < 5)) {
+        while (opModeIsActive() && (ultra.cmUltrasonic() > 10)) {
             if (odsSensor.getLightDetected() >= .9 * odsMax) {
                 odsMax = odsSensor.getLightDetected();
-            } else if (odsSensor.getLightDetected() < .9 * odsMax) {
+                leftMotor.setPower(-.2);
+                rightMotor.setPower(-.2);
+                odsTurning = false;
+                getColor();
+                telemetry.addData("AutoStatus: ", "Following White");
+                telemetry.addData("Ods: ", odsSensor.getLightDetected());
+                telemetry.addData("Ods Expected: ", 3 * odsStart);
+                telemetry.addData("UltraSonic: ", ultra.cmUltrasonic());
+                telemetry.addData("Color: ", color);
+                telemetry.update();
+            } else if (odsSensor.getLightDetected() < .9 * odsMax && !odsTurning) {
                 odsTurn = !odsTurn;
-                telemetry.addData("Follow Status", "Turning to line");
-                telemetry.addData("OdsMax: ", odsMax);
-                telemetry.addData("Light", odsSensor.getLightDetected());
-                telemetry.addData("Touch:", touchSensor.getValue());
+                odsTurning = true;
+                getColor();
+                telemetry.addData("AutoStatus: ", "Switching turn");
+                telemetry.addData("Ods: ", odsSensor.getLightDetected());
+                telemetry.addData("Ods Expected: ", 3 * odsStart);
+                telemetry.addData("UltraSonic: ", ultra.cmUltrasonic());
+                telemetry.addData("Color: ", color);
+                telemetry.update();
             }
 
             if (odsTurn) {
-                leftMotor.setPower(-.10);
-                rightMotor.setPower(.10);
+                leftMotor.setPower(-.3);
+                rightMotor.setPower(-.15);
             }
             else {
-                leftMotor.setPower(.10);
-                rightMotor.setPower(-.10);
+                leftMotor.setPower(-.15);
+                rightMotor.setPower(-.3);
             }
         }
     }
     public void stayWhiteRedAdvanced() throws InterruptedException {
-        runtime.reset();
         odsMax = odsSensor.getLightDetected();
         odsTurn = true;
         sleep(50);
-        while (opModeIsActive() && (ultra.cmUltrasonic() < 13) && (runtime.time() < 5)) {
+        while (opModeIsActive() && (ultra.cmUltrasonic() > 10)) {
             if (odsSensor.getLightDetected() >= .9 * odsMax) {
                 odsMax = odsSensor.getLightDetected();
-            } else if (odsSensor.getLightDetected() < .9 * odsMax) {
+                leftMotor.setPower(-.2);
+                rightMotor.setPower(-.2);
+                odsTurning = false;
+                getColor();
+                telemetry.addData("AutoStatus: ", "Following White");
+                telemetry.addData("Ods: ", odsSensor.getLightDetected());
+                telemetry.addData("Ods Expected: ", 3 * odsStart);
+                telemetry.addData("UltraSonic: ", ultra.cmUltrasonic());
+                telemetry.addData("Color: ", color);
+                telemetry.update();
+            } else if (odsSensor.getLightDetected() < .9 * odsMax && !odsTurning) {
                 odsTurn = !odsTurn;
+                odsTurning = true;
+                getColor();
+                telemetry.addData("AutoStatus: ", "Switching turn");
+                telemetry.addData("Ods: ", odsSensor.getLightDetected());
+                telemetry.addData("Ods Expected: ", 3 * odsStart);
+                telemetry.addData("UltraSonic: ", ultra.cmUltrasonic());
+                telemetry.addData("Color: ", color);
+                telemetry.update();
             }
 
             if (odsTurn) {
-                leftMotor.setPower(-.05);
-                rightMotor.setPower(.05);
+                leftMotor.setPower(-.3);
+                rightMotor.setPower(-.15);
             }
             else {
-                leftMotor.setPower(.05);
-                rightMotor.setPower(.05);
+                leftMotor.setPower(-.15);
+                rightMotor.setPower(-.3);
             }
         }
     }
@@ -435,6 +469,17 @@ public class AutoFunctions extends LinearOpMode {
             runForTime(0, -.1, 1000);
             runForTime(-.1, -.1, 500);
             idle();
+        }
+    }
+    public void getColor() throws InterruptedException {
+        if ((colorSensor.red() > colorSensor.blue()) && (colorSensor.red() > colorSensor.alpha())) {
+            color = "Red";
+        }
+        else if ((colorSensor.blue() > colorSensor.red()) && (colorSensor.blue() > colorSensor.alpha())) {
+            color = "Blue";
+        }
+        else {
+            color = "Alpha";
         }
     }
     public void driveStraightTimed(double drive_speed, double driveTime) throws InterruptedException {
@@ -485,6 +530,8 @@ public class AutoFunctions extends LinearOpMode {
         double leftTurn;
         double rightTurn;
         boolean odsTurn;
+        boolean odsTurning;
+        String color;
     }
     public void declareMap() throws InterruptedException {
         // get motors
