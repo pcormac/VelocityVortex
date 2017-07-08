@@ -264,7 +264,7 @@ public class AutoFunctions extends LinearOpMode {
     }
     public void findWhite() throws InterruptedException {
         runtime.reset();
-        while (opModeIsActive() && (odsSensor.getLightDetected() < (odsStart * 3))) {
+        while (opModeIsActive() && (odsSensor.getLightDetected() < (odsStart * 3)) && runtime.time() < 8) {
             leftMotor.setPower(-.35);
             rightMotor.setPower(-.45);
             telemetry.addData("Follow Status", "Finding white line");

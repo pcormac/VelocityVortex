@@ -48,6 +48,10 @@ public class AutoJustThrowWait extends AutoFunctions {
         sleep(10000);
         runtime.reset();
 
+        runForTime(-1, -.98, 1000);
+        telemetry.addData("AutoStatus: ", "Moving to center");
+        telemetry.update();
+
         // fire first ball
         telemetry.addData("AutoStatus: ", "Firing first ball");
         telemetry.update();
@@ -58,16 +62,13 @@ public class AutoJustThrowWait extends AutoFunctions {
         telemetry.addData("AutoStatus: ", "Loading second ball");
         telemetry.update();
         handFront.setPosition(1);
-        sleep(250);
+        sleep(750);
 
         // fire second ball
         telemetry.addData("AutoStatus: ", "Firing second ball");
         telemetry.update();
         autoFire2();
         elevatorDown();
-
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
 
         telemetry.addData("AutoStatus: ", "Autonomous done");
         //updateColor() ;

@@ -101,7 +101,12 @@ public class AutoSmashBlue extends AutoFunctions {
 
         runtime.reset();
 
-        runForTime(-1, -.98, 650);
+        if (driveController.getVoltage() < 13) {
+            runForTime(-1, -1, 650);
+        } else {
+            runForTime(-1, -1, 450);
+        }
+
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 
@@ -123,10 +128,12 @@ public class AutoSmashBlue extends AutoFunctions {
         autoFire2();
         elevatorDown();
 
-        if (driveController.getVoltage() < 13) {
-            runForTime(.45, -.45, 500);
+        if (driveController.getVoltage() < 13 && driveController.getVoltage() >12.75) {
+            runForTime(.45, -.45, 550);
         } else if (driveController.getVoltage() > 13) {
-            runForTime(.45, -.45, 375);
+            runForTime(.45, -.45, 450);
+        }  else {
+            runForTime(-.45, .45, 625);
         }
 
         findWhite();
@@ -154,7 +161,7 @@ public class AutoSmashBlue extends AutoFunctions {
         handFront.setPosition(1);
 
         runForTime(.4, .4, 2000);
-        runForTime(.8, -.8, 500);
+        runForTime(-.8, .8, 500);
 
     }
 }

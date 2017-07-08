@@ -101,7 +101,12 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
 
         runtime.reset();
 
-        runForTime(-1, -.98, 650);
+        if (driveController.getVoltage() < 13) {
+            runForTime(-1, -1, 650);
+        } else {
+            runForTime(-1, -1, 450);
+        }
+
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 
@@ -123,11 +128,15 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
         autoFire2();
         elevatorDown();
 
-        if (driveController.getVoltage() < 13) {
-            runForTime(.45, -.45, 500);
+
+        if (driveController.getVoltage() < 13 && driveController.getVoltage() >12.75) {
+            runForTime(.45, -.45, 550);
         } else if (driveController.getVoltage() > 13) {
-            runForTime(.45, -.45, 375);
+            runForTime(.45, -.45, 450);
+        }  else {
+            runForTime(.45, - .45, 625);
         }
+
 
         /*
         if (!navx_device.isCalibrating()) {
@@ -146,7 +155,7 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
         stayWhiteBlueAdvanced();
         //runForTime(-.2, -.17, 4000);
 
-        runForTime(-.25, -.25, 500);
+            runForTime(-.25, -.25, 500);
 
         sleep(500);
 
@@ -155,8 +164,7 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
         if (colorSensor.blue() < colorSensor.red() && !(colorSensor.blue() < colorSensor.alpha())) {
             sleep(5000);
             runForTime(-.25, -.25, 1000);
-        }
-        else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.alpha()){
+        } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.alpha()){
             leftMotor.setPower(0);
             rightMotor.setPower(0);
         }
@@ -164,7 +172,8 @@ public class AutoSmashBlueAdvanced extends AutoFunctions {
 
         handFront.setPosition(1);
         runForTime(.4, .4, 2000);
-        runForTime(.8, -.8, 500);
+        runForTime(-.8, .8, 2000);
+
 
     }
 }

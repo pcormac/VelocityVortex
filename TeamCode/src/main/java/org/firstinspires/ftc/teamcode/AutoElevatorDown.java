@@ -34,11 +34,27 @@ public class AutoElevatorDown extends AutoFunctions {
 
         declareMap();
 
-        telemetry.addData(">", "Robot Ready.");    //
+        elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        telemetry.addData("Begining pos: ", elevator.getCurrentPosition());
+        telemetry.update();
+
+        elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        telemetry.addData("Targer pos: ", elevator.getTargetPosition());
+        telemetry.update();
+
+        telemetry.addData("" +
+                ">", "Robot Ready.");    //
         telemetry.update();
 
         waitForStart();
-
+        elevator.setTargetPosition(2000);
+        elevator.setPower(.75);
+        while (elevator.getCurrentPosition() < 2000) {
+            telemetry.addData("Encoder Ticks: ", elevator.getCurrentPosition());
+            telemetry.update();
+            idle();
+        }
+        elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         elevatorDown();
 
         telemetry.addData("AutoStatus: ", "Elevator down");

@@ -101,7 +101,13 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
 
         runtime.reset();
 
-        runForTime(-1, -.98, 650);
+        if (driveController.getVoltage() < 13) {
+            runForTime(-1, -.98, 650);
+        } else {
+            runForTime(-1, -.98, 500);
+        }
+
+
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 
@@ -123,10 +129,12 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
         autoFire2();
         elevatorDown();
 
-        if (driveController.getVoltage() < 13) {
-            runForTime(-.45, .45, 500);
+        if (driveController.getVoltage() < 13 && driveController.getVoltage() > 12.75) {
+            runForTime(-.45, .45, 550);
         } else if (driveController.getVoltage() > 13) {
-            runForTime(-.45, .45, 375);
+            runForTime(-.45, .45, 450);
+        } else {
+            runForTime(-.45, .45, 625);
         }
 
         /*
@@ -156,16 +164,16 @@ public class AutoSmashRedAdvanced extends AutoFunctions {
             sleep(5000);
             runForTime(-.25, -.25, 1000);
         }
-        else if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.alpha()){
+        else if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.alpha()) {
             leftMotor.setPower(0);
             rightMotor.setPower(0);
         }
 
 
-
         handFront.setPosition(1);
         runForTime(.4, .4, 2000);
         runForTime(.8, -.8, 500);
-
+        sleep(1000);
+        runForTime(-.8, .8, 500);
     }
 }

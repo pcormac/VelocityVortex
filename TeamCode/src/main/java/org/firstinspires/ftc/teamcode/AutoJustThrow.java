@@ -47,8 +47,7 @@ public class AutoJustThrow extends AutoFunctions {
 
         runtime.reset();
 
-        // drive to center
-        runForTime(-.26, -.3, 1200);
+        runForTime(-1, -.98, 650);
         telemetry.addData("AutoStatus: ", "Moving to center");
         telemetry.update();
 
@@ -69,17 +68,6 @@ public class AutoJustThrow extends AutoFunctions {
         telemetry.update();
         autoFire2();
         elevatorDown();
-
-        leftMotor.setPower(-.5);
-        rightMotor.setPower(-.5);
-        sleep(700);
-
-        leftMotor.setPower(-.5);
-        rightMotor.setPower(.5);
-        sleep(500);
-
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
 
         telemetry.addData("AutoStatus: ", "Autonomous done");
         //updateColor() ;

@@ -48,26 +48,27 @@ public class AutoJustThrowLong extends AutoFunctions {
         runtime.reset();
 
         sleep(10000);
+        runForTime(-1, -.98, 1100);
+        telemetry.addData("AutoStatus: ", "Moving to center");
+        telemetry.update();
+
         // fire first ball
         telemetry.addData("AutoStatus: ", "Firing first ball");
         telemetry.update();
-        autoFireLong();
+        autoFire();
         elevatorDown();
 
         // load second ball
         telemetry.addData("AutoStatus: ", "Loading second ball");
         telemetry.update();
         handFront.setPosition(1);
-        sleep(500);
+        sleep(750);
 
         // fire second ball
         telemetry.addData("AutoStatus: ", "Firing second ball");
         telemetry.update();
         autoFire2();
         elevatorDown();
-        leftMotor.setPower(-.5);
-        rightMotor.setPower(-.5);
-        sleep(1000);
 
         telemetry.addData("AutoStatus: ", "Autonomous done");
         //updateColor() ;
